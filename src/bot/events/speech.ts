@@ -44,6 +44,8 @@ const handleSpeakingEvent = ({
       opusStream.on("end", async () => {
         const user = client.users.cache.get(userId);
         if (!user) return;
+        if (user.bot) return;
+        if (user.system) return;
 
         const voiceMessage = await createVoiceMessage({
           client,

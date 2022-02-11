@@ -1,17 +1,17 @@
 {
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "defaultSeverity": "error",
   "compilerOptions": {
-    "target": "ES2015",
-    "module": "commonjs",
-    "lib": [
-      "ESNext.String"
-    ],
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
-  }
+      "target": "ES2018",
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "strict": true,
+      "declaration": true,
+      "outDir": "./dist"
+  },
+  "exclude": [
+      "node_modules",
+      "dist"
+  ]
 }

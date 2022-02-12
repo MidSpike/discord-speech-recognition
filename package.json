@@ -25,19 +25,17 @@
   },
   "homepage": "https://discordsr.netlify.app/",
   "engines": {
-    "node": ">=16.6.0"
+    "node": ">=17.0.0"
   },
   "dependencies": {
     "@discordjs/voice": "^0.8.0",
     "@tsconfig/node16": "^1.0.2",
-    "@types/node-wit": "^6.0.1",
     "@types/wav": "^1.0.1",
     "axios": "^0.25.x",
     "discord.js": "^13.6.0",
     "ffmpeg-static": "^4.4.1",
     "node-fetch": "^3.x.x",
     "node-gyp": "^8.2.0",
-    "node-wit": "^6.0.1",
     "wav": "^1.0.2"
   },
   "devDependencies": {

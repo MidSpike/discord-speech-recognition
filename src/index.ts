@@ -9,7 +9,3 @@ export {
   GoogleSpeechV2Options,
   resolveSpeechWithGoogleSpeechV2,
 } from "./speechRecognition/googleV2";
-export {
-  resolveSpeechWithWitai,
-  WitaiOptions,
-} from "./speechRecognition/witai";

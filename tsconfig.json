@@ -2,7 +2,7 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "defaultSeverity": "error",
   "compilerOptions": {
-      "target": "ES2018",
+      "target": "ES2022",
       "module": "commonjs",
       "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true,

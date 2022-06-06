@@ -2,8 +2,8 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "defaultSeverity": "error",
   "compilerOptions": {
-      "target": "ES2022",
-      "module": "commonjs",
+      "target": "ESNext",
+      "module": "CommonJS",
       "esModuleInterop": true,
       "forceConsistentCasingInFileNames": true,
       "strict": true,

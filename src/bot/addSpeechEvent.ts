@@ -1,32 +1,70 @@
+import prism from "prism-media";
+
 import { Client } from "discord.js";
-import { resolveSpeechWithGoogleSpeechV2 } from "../speechRecognition/googleV2";
-import { setupSpeechEvent, setupVoiceJoinEvent } from "./events";
-import { SpeechOptions } from "./speechOptions";
 
-/**
- * Main function, use this to add new events to present [discord.Client](https://discord.js.org/#/docs/main/stable/class/Client)
- *
- * Defaults uses `en-US` language and google speech v2 api with generic key, that should be used for personal or testing purposes only, as it may be revoked by Google at any time.\
- * You can obtain your own API key here <http://www.chromium.org/developers/how-tos/api-keys>.\
- * See [python speech recognition package](https://github.com/Uberi/speech_recognition/blob/c89856088ad81d81d38be314e3db50905481c5fe/speech_recognition/__init__.py#L850) for more details.
- * <hr>
- *
- * Example usage:
- * ```javascript
- * const client = new Client({
- *   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_VOICE_STATES],
- * });
- * addSpeechEvent(client, { lang: "pl-PL" });
- * ```
- */
-export const addSpeechEvent = (client: Client, options?: SpeechOptions) => {
-  const defaultOptions: SpeechOptions = {
-    lang: "en-US",
-    speechRecognition: resolveSpeechWithGoogleSpeechV2,
-    ignoreBots: true,
-  };
-  const speechOptions = { ...defaultOptions, ...options };
+import { EndBehaviorType, getVoiceConnection, entersState, VoiceConnectionStatus } from "@discordjs/voice";
 
-  setupVoiceJoinEvent(client, speechOptions);
-  setupSpeechEvent(client, speechOptions);
+import { createVoiceMessage } from "./voiceMessage/createVoiceMessage";
+
+//------------------------------------------------------------//
+
+const activeGuildVoiceListeners = new Set<string>();
+
+//------------------------------------------------------------//
+
+export function addSpeechEvent(
+  client: Client,
+) {
+  client.on("voiceStateUpdate", async (_old, newVoiceState) => {
+    if (!newVoiceState.channel) return;
+
+    const connection = getVoiceConnection(newVoiceState.channel.guild.id);
+    if (!connection) return;
+
+    const isGuildVoiceListenerActive = activeGuildVoiceListeners.has(connection.joinConfig.guildId);
+    if (isGuildVoiceListenerActive) return;
+    activeGuildVoiceListeners.add(connection.joinConfig.guildId);
+
+    try {
+      await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
+    } catch (error) {
+      console.trace(error);
+
+      return;
+    }
+
+    connection.receiver.speaking.on("start", (userId) => {
+      const user = client.users.cache.get(userId);
+      if (!user) return;
+      if (user.bot) return;
+      if (user.system) return;
+
+      const opusStream = connection.receiver.subscribe(userId, {
+        end: {
+          behavior: EndBehaviorType.AfterSilence,
+          duration: 100,
+        },
+      });
+
+      const bufferData: Uint8Array[] = [];
+      opusStream.pipe(
+        new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 })
+      ).on("data", (data: Uint8Array) => {
+        bufferData.push(data);
+      });
+
+      opusStream.on("end", async () => {
+        const voiceMessage = await createVoiceMessage({
+          client,
+          bufferData,
+          user,
+          connection,
+        });
+
+        if (!voiceMessage) return;
+
+        client.emit("speech", voiceMessage);
+      });
+    });
+  });
 };

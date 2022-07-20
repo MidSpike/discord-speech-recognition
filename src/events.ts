@@ -1,31 +1,27 @@
-import { VoiceConnection } from "@discordjs/voice";
-import VoiceMessage from "./bot/voiceMessage";
+import { VoiceMessage } from "./bot/voiceMessage/VoiceMessage";
 
-/**
- * Emitted when bot joins a voice channel and has not started speech recognition in it
- *
- * ```
- * @event
- */
-export declare function voiceJoin(connection: VoiceConnection): void;
+//------------------------------------------------------------//
 
 /**
  * Emitted when someone ends talking in channel
- * <hr>
  *
- * Example usage:
+ * @param voiceMessage
+ *
+ * @example
  * ```javascript
  * client.on("speech", (msg) => {
  *   msg.author.send(msg.content);
  * });
  * ```
- * @param voiceMessage
+ *
  * @event
  */
 export declare function speech(voiceMessage: VoiceMessage): void;
 
 /**
- * Emitted when error occurs during processing audio stream. Usually when someone tries to talk using web version of discord. See https://github.com/discordjs/opus/issues/49
+ * Emitted when error occurs during processing audio stream.
+ * Usually when someone tries to talk using web version of discord.
+ * See https://github.com/discordjs/opus/issues/49
  * @asMemberOf DiscordSR
  * @param error
  * @event

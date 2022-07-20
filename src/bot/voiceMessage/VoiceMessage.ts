@@ -1,25 +1,20 @@
+import { Client, User, VoiceBasedChannel } from "discord.js";
+
 import { VoiceConnection } from "@discordjs/voice";
-import {
-  Client,
-  Guild,
-  GuildMember,
-  StageChannel,
-  User,
-  VoiceChannel,
-} from "discord.js";
-import wav from "wav";
+
+//------------------------------------------------------------//
 
 export interface VoiceMessageData {
-  duration: number;
-  audioBuffer: Buffer;
-  content?: string;
   error?: Error;
-  connection: VoiceConnection;
+  content?: string;
   author: User;
+  connection: VoiceConnection;
+  audioBuffer: Buffer;
+  duration: number;
 }
 
-export default class VoiceMessage {
-  channel: VoiceChannel | StageChannel;
+export class VoiceMessage {
+  channel: VoiceBasedChannel;
 
   /**
    * Speech to text translation
@@ -48,10 +43,7 @@ export default class VoiceMessage {
   connection: VoiceConnection;
 
   /**
-   * Voice message, it is emited `speech` event
-   * @param client
-   * @param data
-   * @param channel
+   * Voice message, it is emitted `speech` event
    * @private
    */
   constructor({
@@ -60,37 +52,16 @@ export default class VoiceMessage {
     channel,
   }: {
     client: Client;
+    channel: VoiceBasedChannel;
     data: VoiceMessageData;
-    channel: VoiceChannel | StageChannel;
   }) {
-    this.client = client;
-    this.channel = channel;
+    this.error = data?.error;
+    this.content = data?.content;
     this.author = data.author;
     this.audioBuffer = data.audioBuffer;
     this.connection = data.connection;
     this.duration = data.duration;
-    this.content = data?.content;
-    this.error = data?.error;
-  }
-
-  /**
-   * Saves audio to .wav file
-   * @param filename File directory, for example: `./test.wav`
-   */
-  saveToFile(filename: string): void {
-    const outputFile = new wav.FileWriter(filename, {
-      sampleRate: 48000,
-      channels: 1,
-    });
-    outputFile.write(this.audioBuffer);
-    outputFile.end();
-  }
-
-  get member(): GuildMember | undefined {
-    return this.guild.members.cache.get(this.author.id);
-  }
-
-  get guild(): Guild {
-    return this.channel.guild;
+    this.client = client;
+    this.channel = channel;
   }
 }

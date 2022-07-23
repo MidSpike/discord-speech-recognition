@@ -14,26 +14,35 @@ export async function resolveSpeechWithGoogleSpeechV2(
     const lang = 'en-US';
     const profanityFilter = '1';
 
-    const response = await axios({
-        method: 'post',
-        url: `https://www.google.com/speech-api/v2/recognize?output=json&lang=${lang}&key=${key}&pFilter=${profanityFilter}`,
-        headers: {
-            'Content-Type': 'audio/l16; rate=48000;',
-        },
-        data: audioBuffer,
-        transformResponse: [
-            (data) => {
-                const fixedData = data.replace('{\"result\":[]}', '');
-                try {
-                    return JSON.parse(fixedData);
-                } catch (error) {
-                    return {
-                        error: error,
-                    };
-                }
+    let response;
+    try {
+        response = await axios({
+            method: 'post',
+            url: `https://www.google.com/speech-api/v2/recognize?output=json&lang=${lang}&key=${key}&pFilter=${profanityFilter}`,
+            headers: {
+                'Content-Type': 'audio/l16; rate=48000;',
             },
-        ],
-    });
+            data: audioBuffer,
+            transformResponse: [
+                (data) => {
+                    const fixedData = data.replace('{\"result\":[]}', '');
+                    try {
+                        return JSON.parse(fixedData);
+                    } catch (error) {
+                        console.trace(error);
+
+                        return {
+                            error: error,
+                        };
+                    }
+                },
+            ],
+        });
+    } catch (error) {
+        console.trace(error);
+
+        throw error; // rethrow error after logging it
+    }
 
     if (response.data.error) throw new Error(`Google speech api error: ${response.data}`);
 

@@ -71,7 +71,14 @@ export class VoiceMessage {
         const duration = getDurationFromMonoBuffer(monoBuffer);
         if (duration < 1 || duration > 19) return undefined; // values are possibly hard-coded to prevent abuse
 
-        const content = await resolveSpeechWithGoogleSpeechV2(monoBuffer);
+        let content;
+        try {
+            content = await resolveSpeechWithGoogleSpeechV2(monoBuffer);
+        } catch (error) {
+            console.trace(error);
+
+            throw error; // rethrow the error after logging it
+        }
 
         const channel = client.channels.cache.get(connection.joinConfig.channelId);
         if (!channel?.isVoiceBased()) return undefined;

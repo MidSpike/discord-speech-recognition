@@ -23,32 +23,15 @@ export async function resolveSpeechWithGoogleSpeechV2(
                 'Content-Type': 'audio/l16; rate=48000;',
             },
             data: audioBuffer,
-            transformResponse: [
-                (data) => {
-                    const fixedData = data.replace('{"result":[]}', '');
-                    try {
-                        return JSON.parse(fixedData);
-                    } catch (error) {
-                        console.trace(error);
-
-                        return {
-                            error: error,
-                        };
-                    }
-                },
-            ],
         });
     } catch (error) {
-        console.trace(error);
+        console.trace('resolveSpeechWithGoogleSpeechV2(): failed to send request to Google;', { error });
 
         throw error; // rethrow error after logging it
     }
 
-    if (response.data.error) {
-        console.trace(response.data.error);
+    const speechToText = response.data.result?.at(0)?.alternative?.at(0)?.transcript;
+    if (!speechToText) throw new Error('resolveSpeechWithGoogleSpeechV2(): failed to receive speech from Google;');
 
-        throw new Error(response.data.error); // rethrow error after logging it
-    }
-
-    return response.data.result[0].alternative[0].transcript;
+    return speechToText;
 }

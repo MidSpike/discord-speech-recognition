@@ -14,21 +14,14 @@ export async function resolveSpeechWithGoogleSpeechV2(
     const lang = 'en-US';
     const profanityFilter = '1';
 
-    let response;
-    try {
-        response = await axios({
-            method: 'post',
-            url: `https://www.google.com/speech-api/v2/recognize?output=json&lang=${lang}&key=${key}&pFilter=${profanityFilter}`,
-            headers: {
-                'Content-Type': 'audio/l16; rate=48000;',
-            },
-            data: audioBuffer,
-        });
-    } catch (error) {
-        console.trace('resolveSpeechWithGoogleSpeechV2(): failed to send request to Google;', { error });
-
-        throw error; // rethrow error after logging it
-    }
+    const response = await axios({
+        method: 'post',
+        url: `https://www.google.com/speech-api/v2/recognize?output=json&lang=${lang}&key=${key}&pFilter=${profanityFilter}`,
+        headers: {
+            'Content-Type': 'audio/l16; rate=48000;',
+        },
+        data: audioBuffer,
+    });
 
     if (typeof response?.data !== 'string') {
         throw new Error('resolveSpeechWithGoogleSpeechV2(): response.data is not a string');

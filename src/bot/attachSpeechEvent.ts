@@ -72,7 +72,7 @@ export function attachSpeechEvent({
                         userId: userId,
                     });
                 } catch (error) {
-                    console.trace(error);
+                    client.emit('speechError', error);
 
                     return;
                 }

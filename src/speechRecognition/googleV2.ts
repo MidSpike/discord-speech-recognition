@@ -30,7 +30,20 @@ export async function resolveSpeechWithGoogleSpeechV2(
         throw error; // rethrow error after logging it
     }
 
-    const speechToText = response.data.result?.at(0)?.alternative?.at(0)?.transcript;
+    /**
+     * For some strange reason the google api returns invalid json with 2 objects in the response.
+     * We have to account for this.
+     * 
+     * @example
+     * The following is a sample response from the google api:
+     * ```
+     * {"result":[]}
+     * {"result":[{"alternative":[{"transcript":"This is a test"}]}]}
+     * ```
+     */
+    const response_data: string = response.data.replace('{\"result\":[]}', ''); // yes this is necessary
+
+    const speechToText: string | undefined = JSON.parse(response_data).result?.at(0)?.alternative?.at(0)?.transcript;
     if (!speechToText) throw new Error('resolveSpeechWithGoogleSpeechV2(): failed to receive speech from Google;');
 
     return speechToText;

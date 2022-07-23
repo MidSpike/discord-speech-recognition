@@ -30,6 +30,10 @@ export async function resolveSpeechWithGoogleSpeechV2(
         throw error; // rethrow error after logging it
     }
 
+    if (typeof response?.data !== 'string') {
+        throw new Error('resolveSpeechWithGoogleSpeechV2(): response.data is not a string');
+    }
+
     /**
      * For some strange reason the google api returns invalid json with 2 objects in the response.
      * We have to account for this.

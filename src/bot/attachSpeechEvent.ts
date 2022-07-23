@@ -10,7 +10,7 @@ import { VoiceMessage } from './voiceMessage/VoiceMessage';
 
 type AttachSpeechEventOptions = {
     client: Client<true>;
-    shouldProcessUserId?: (userId: string) => boolean;
+    shouldProcessUserId?: (userId: string) => Promise<boolean>;
 };
 
 //------------------------------------------------------------//
@@ -45,7 +45,7 @@ export function attachSpeechEvent({
         connection.receiver.speaking.on('start', async function onSpeakingStartSpeechRecognition(userId) {
             if (
                 typeof shouldProcessUserId === 'function' &&
-                !shouldProcessUserId(userId)
+                !(await shouldProcessUserId(userId))
             ) return;
 
             const opusStream = connection.receiver.subscribe(userId, {

@@ -63,12 +63,19 @@ export function attachSpeechEvent({
             });
 
             opusStream.on('end', async () => {
-                const voiceMessage = await VoiceMessage.from({
-                    connection: connection,
-                    bufferData: bufferData,
-                    client: client,
-                    userId: userId,
-                });
+                let voiceMessage;
+                try {
+                    voiceMessage = await VoiceMessage.from({
+                        connection: connection,
+                        bufferData: bufferData,
+                        client: client,
+                        userId: userId,
+                    });
+                } catch (error) {
+                    console.trace(error);
+
+                    return;
+                }
                 if (!voiceMessage) return;
 
                 client.emit('speech', voiceMessage);

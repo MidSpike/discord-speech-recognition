@@ -25,7 +25,7 @@ export async function resolveSpeechWithGoogleSpeechV2(
             data: audioBuffer,
             transformResponse: [
                 (data) => {
-                    const fixedData = data.replace('{\"result\":[]}', '');
+                    const fixedData = data.replace('{"result":[]}', '');
                     try {
                         return JSON.parse(fixedData);
                     } catch (error) {
@@ -44,7 +44,11 @@ export async function resolveSpeechWithGoogleSpeechV2(
         throw error; // rethrow error after logging it
     }
 
-    if (response.data.error) throw new Error(`Google speech api error: ${response.data}`);
+    if (response.data.error) {
+        console.trace(response.data.error);
+
+        throw new Error(response.data.error); // rethrow error after logging it
+    }
 
     return response.data.result[0].alternative[0].transcript;
 }

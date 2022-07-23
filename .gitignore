@@ -1,12 +1,17 @@
-node_modules
-dist
-generated_docs
-config.json
-coverage
+# environment variables
+*.env
+
+# git
+.git
+
+# vscode configs
 .vscode
-.nyc_output
-recordings
-tsconfig.tsbuildinfo
-.env
-Dockerfile
-.dockerignore
+
+# vscode extensions
+.VSCodeCounter
+
+# node
+node_modules
+
+# TypeScript generated
+/dist

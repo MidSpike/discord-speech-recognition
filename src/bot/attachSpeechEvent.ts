@@ -19,11 +19,10 @@ export function attachSpeechEvent({
     client,
     shouldProcessUserId,
 }: AttachSpeechEventOptions) {
-    client.on<'voiceStateUpdate'>('voiceStateUpdate', async (_old, newVoiceState) => {
+    client.on('voiceStateUpdate', async (_old, newVoiceState) => {
         if (newVoiceState.id !== client.user.id) return;
-        if (!newVoiceState.channel) return;
 
-        const connection = getVoiceConnection(newVoiceState.channel.guild.id);
+        const connection = getVoiceConnection(newVoiceState.guild.id);
         if (!connection) return;
 
         try {
@@ -60,6 +59,10 @@ export function attachSpeechEvent({
                 new prism.opus.Decoder({ rate: 48000, channels: 2, frameSize: 960 })
             ).on('data', (data: Uint8Array) => {
                 bufferData.push(data);
+            });
+
+            opusStream.on('error', (error) => {
+                client.emit('speechError', error);
             });
 
             opusStream.on('end', async () => {

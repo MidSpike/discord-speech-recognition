@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SpeechError, SpeechErrorCode } from '../utils/speechError';
 
 //------------------------------------------------------------//
 
@@ -21,10 +22,11 @@ export async function resolveSpeechWithGoogleSpeechV2(
             'Content-Type': 'audio/l16; rate=48000;',
         },
         data: audioBuffer,
+        validateStatus: () => true, // allow any status code to be returned without throwing an error
     });
 
-    if (typeof response?.data !== 'string') {
-        throw new Error('resolveSpeechWithGoogleSpeechV2(): response.data is not a string');
+    if (response.status !== 200) {
+        throw SpeechError.from(SpeechErrorCode.NetworkRequest, 'resolveSpeechWithGoogleSpeechV2(): response.status !== 200', response);
     }
 
     /**
@@ -41,7 +43,7 @@ export async function resolveSpeechWithGoogleSpeechV2(
     const response_data: string = response.data.replace('{\"result\":[]}', ''); // yes this is necessary
 
     const speechToText: string | undefined = JSON.parse(response_data).result?.at(0)?.alternative?.at(0)?.transcript;
-    if (!speechToText) throw new Error('resolveSpeechWithGoogleSpeechV2(): failed to receive speech from Google;');
+    if (!speechToText) throw SpeechError.from(SpeechErrorCode.ParseNetworkRequest, 'resolveSpeechWithGoogleSpeechV2(): speechToText is undefined', response_data);
 
     return speechToText;
 }

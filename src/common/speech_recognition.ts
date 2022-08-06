@@ -1,16 +1,15 @@
+//------------------------------------------------------------//
+//        Copyright (c) MidSpike, All rights reserved.        //
+//------------------------------------------------------------//
+
 import axios from 'axios';
 
-import { SpeechError, SpeechErrorCode } from '../utils/speechError';
+import { SpeechError, SpeechErrorCode } from './speech_error';
 
 //------------------------------------------------------------//
 
-/**
- * Performs speech recognition using the Google Speech Recognition API V2
- * @param audioBuffer PCM mono audio with 48kHz sample rate
- * @returns Recognized text from speech
- */
 export async function resolveSpeechWithGoogleSpeechV2(
-    audioBuffer: Buffer,
+    audioBuffer: Buffer, // 48kHz PCM mono audio
 ): Promise<string> {
     const key = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw';
     const lang = 'en-US';

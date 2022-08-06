@@ -1,3 +1,7 @@
+//------------------------------------------------------------//
+//        Copyright (c) MidSpike, All rights reserved.        //
+//------------------------------------------------------------//
+
 export enum SpeechErrorCode {
     NetworkRequest = 'NetworkRequest',
     NetworkResponse = 'NetworkResponse',

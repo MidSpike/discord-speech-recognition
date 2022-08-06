@@ -1,7 +1,11 @@
-export { attachSpeechEvent } from './bot/attachSpeechEvent';
+//------------------------------------------------------------//
+//        Copyright (c) MidSpike, All rights reserved.        //
+//------------------------------------------------------------//
 
-export { VoiceMessage } from './bot/voiceMessage/VoiceMessage';
+export * from './common/speech_event';
 
-export { resolveSpeechWithGoogleSpeechV2 } from './speechRecognition/googleV2';
+export * from './common/voice_message';
 
-export { SpeechErrorCode, SpeechError } from './utils/speechError';
+export * from './common/speech_recognition';
+
+export * from './common/speech_error';

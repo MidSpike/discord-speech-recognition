@@ -1,70 +1,61 @@
-# Discord Speech Recognition Extension
+# Discord Speech Recognition
 
-This is an extension for [discord.js](https://discord.js.org) library that makes creating discord speech recognition bots as easy as common text bots.
+This is an extension for discord.js that allows for easy access to speech-to-text processing.
 
 ## Installation
 
-**Discord.js v13**:
-
 ```
-npm i discord-speech-recognition
+npm i @midspike/discord-speech-recognition
 ```
 
-Checkout simpleBot example in examples directory for ready-to-use bot.
-
-**Discord.js v12**:
-
-```
-npm i discord-speech-recognition@1
-```
-
-You need also dependency for voice, recommended:
-
-```
-npm i @discordjs/opus
-```
-
-You can read more here: <https://discordjs.guide/voice/#installing-dependencies>
-
-## Docs
-
-<https://discordsr.netlify.app/>
-
-## Example usage for discord.js v13
+## Example (discord.js v14)
 
 ```javascript
-const { Client, Intents } = require("discord.js");
-const { joinVoiceChannel } = require("@discordjs/voice");
-const { addSpeechEvent } = require("discord-speech-recognition");
+const Discord = require("discord.js");
 
-const client = new Client({
+const { attachSpeechEvent, SpeechErrorCode } = require("discord-speech-recognition");
+
+//------------------------------------------------------------//
+
+const client = new Discord.Client({
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_VOICE_STATES,
     Intents.FLAGS.GUILD_MESSAGES,
   ],
 });
-addSpeechEvent(client);
 
-client.on("messageCreate", (msg) => {
-  const voiceChannel = msg.member?.voice.channel;
-  if (voiceChannel) {
-    joinVoiceChannel({
-      channelId: voiceChannel.id,
-      guildId: voiceChannel.guild.id,
-      adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-      selfDeaf: false,
-    });
+attachSpeechEvent({
+  client: client,
+  shouldProcessUserId: (userId) => {
+    // Assuming that the bot is currently in a voice channel with a user,
+    // every time that a user in the voice channel starts speaking,
+    // this function will be called to check if the user's voice should be processed
+
+    // You should ignore bots, system accounts, and people who do not want to be processed.
+
+    // Due to laws such as GDPR, it is highly recommended to
+    // have users opt-in to your bot's speech recognition.
+
+    // return true to process the user's voice.
+    // return false to not process the user's voice.
   }
 });
 
-client.on("speech", (msg) => {
-  msg.author.send(msg.content);
+//------------------------------------------------------------//
+
+client.on('speechError', (speechError) => {
+  // It is highly recommended to filter out errors that you don't care about.
+  // Use `speechError.code` and the enum `SpeechErrorCode` to filter.
+
+  console.trace(speechError);
 });
 
-client.on("ready", () => {
-  console.log("Ready!");
+client.on('speech', (voiceMessage) => {
+  console.log(voiceMessage); // voiceMessage is an instance of a VoiceMessage
 });
 
-client.login("token");
+//------------------------------------------------------------//
+
+client.login('YOUR_TOKEN_GOES_HERE');
 ```

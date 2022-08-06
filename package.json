@@ -1,7 +1,7 @@
 {
-  "name": "discord-speech-recognition",
-  "version": "2.1.1-fork-0.1.0",
-  "description": "Extension for making discord speech recognition bots.",
+  "name": "@midspike/discord-speech-recognition",
+  "version": "2.1.1-fork-0.2.0",
+  "description": "Introduces speech recognition for discord.js bots.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -11,17 +11,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Rei-x/discord-speech-recognition.git"
+    "url": "git+https://github.com/MidSpike/discord-speech-recognition.git"
   },
-  "keywords": [
-    "discord.js",
-    "discord",
-    "speechrecognition"
-  ],
-  "author": "Rei-x",
+  "keywords": [],
+  "author": "MidSpike",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Rei-x/discord-speech-recognition/issues"
+    "url": "https://github.com/MidSpike/discord-speech-recognition/issues"
   },
   "homepage": "",
   "engines": {

@@ -1,16 +1,20 @@
+//------------------------------------------------------------//
+//        Copyright (c) MidSpike, All rights reserved.        //
+//------------------------------------------------------------//
+
 import prism from 'prism-media';
 
 import { Client } from 'discord.js';
 
 import { EndBehaviorType, getVoiceConnection, entersState, VoiceConnectionStatus } from '@discordjs/voice';
 
-import { VoiceMessage } from './voiceMessage/VoiceMessage';
+import { VoiceMessage } from './voice_message';
 
-import { SpeechErrorCode, SpeechError } from '../utils/speechError';
+import { SpeechErrorCode, SpeechError } from './speech_error';
 
 //------------------------------------------------------------//
 
-type AttachSpeechEventOptions = {
+export type AttachSpeechEventOptions = {
     client: Client<true>;
     shouldProcessUserId?: (userId: string) => Promise<boolean>;
 };

@@ -1,14 +1,37 @@
+//------------------------------------------------------------//
+//        Copyright (c) MidSpike, All rights reserved.        //
+//------------------------------------------------------------//
+
 import { Client, VoiceBasedChannel } from 'discord.js';
 
 import { VoiceConnection } from '@discordjs/voice';
 
-import { convertStereoToMono, getDurationFromMonoBuffer } from '../../utils/audio';
-
-import { resolveSpeechWithGoogleSpeechV2 } from '../../speechRecognition/googleV2';
+import { resolveSpeechWithGoogleSpeechV2 } from './speech_recognition';
 
 //------------------------------------------------------------//
 
-type VoiceMessageConstructorOptions = {
+export function convertStereoToMono(input: Buffer): Buffer {
+    const stereoData = new Int16Array(input);
+
+    const monoData = new Int16Array(stereoData.length / 2);
+
+    for (let i = 0, j = 0; i < stereoData.length; i += 4) {
+        monoData[j] = stereoData[i];
+        j += 1;
+        monoData[j] = stereoData[i + 1];
+        j += 1;
+    }
+
+    return Buffer.from(monoData);
+}
+
+export function getDurationFromMonoBuffer(buffer: Buffer): number {
+    return buffer.length / 48000 / 2;
+}
+
+//------------------------------------------------------------//
+
+export type VoiceMessageConstructorOptions = {
     /** The discord client responsible for recording the voice message */
     client: Client<true>;
     /** The voice channel the message originated from */

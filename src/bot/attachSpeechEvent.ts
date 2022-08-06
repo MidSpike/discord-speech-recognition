@@ -6,6 +6,8 @@ import { EndBehaviorType, getVoiceConnection, entersState, VoiceConnectionStatus
 
 import { VoiceMessage } from './voiceMessage/VoiceMessage';
 
+import { SpeechErrorCode, SpeechError } from '../utils/speechError';
+
 //------------------------------------------------------------//
 
 type AttachSpeechEventOptions = {
@@ -62,7 +64,7 @@ export function attachSpeechEvent({
             });
 
             opusStream.on('error', (error) => {
-                client.emit('speechError', error);
+                client.emit('speechError', SpeechError.from(SpeechErrorCode.Unknown, error, 'Opus Stream Error'));
             });
 
             opusStream.on('end', async () => {
@@ -75,7 +77,7 @@ export function attachSpeechEvent({
                         userId: userId,
                     });
                 } catch (error) {
-                    client.emit('speechError', error);
+                    client.emit('speechError', SpeechError.from(SpeechErrorCode.CreateVoiceMessage, error as Error | string, 'Failed to create VoiceMessage'));
 
                     return;
                 }

@@ -30,6 +30,10 @@ export async function resolveSpeechWithGoogleSpeechV2(
         throw SpeechError.from(SpeechErrorCode.NetworkRequest, 'resolveSpeechWithGoogleSpeechV2(): response.status !== 200', response);
     }
 
+    if (typeof response.data !== 'string') {
+        throw SpeechError.from(SpeechErrorCode.NetworkResponse, 'resolveSpeechWithGoogleSpeechV2(): typeof response.data !== string', response);
+    }
+
     /**
      * For some strange reason the google api returns invalid json with 2 objects in the response.
      * We have to account for this.

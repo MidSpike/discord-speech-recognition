@@ -1,5 +1,6 @@
 export enum SpeechErrorCode {
     NetworkRequest = 'NetworkRequest',
+    NetworkResponse = 'NetworkResponse',
     ParseNetworkRequest = 'ParseNetworkRequest',
     CreateVoiceMessage = 'CreateVoiceMessage',
     Unknown = 'Unknown',

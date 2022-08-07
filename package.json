@@ -1,6 +1,6 @@
 {
   "name": "@midspike/discord-speech-recognition",
-  "version": "2.1.1-fork-0.2.0",
+  "version": "3.0.0-beta-0.0.0",
   "description": "Introduces speech recognition for discord.js bots.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

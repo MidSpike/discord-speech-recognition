@@ -10,23 +10,24 @@ npm i @midspike/discord-speech-recognition
 
 ## Example (discord.js v14)
 
-```javascript
-const Discord = require("discord.js");
+```typescript
+import * as Discord from 'discord.js';
 
-const { attachSpeechEvent, SpeechErrorCode } = require("discord-speech-recognition");
+import * as DiscordSpeechRecognition from '@midspike/discord-speech-recognition';
 
 //------------------------------------------------------------//
 
-const client = new Discord.Client({
+const discord_client = new Discord.Client({
   intents: [
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_VOICE_STATES,
-    Intents.FLAGS.GUILD_MESSAGES,
+    Discord.GatewayIntentBits.Guilds,
+    Discord.GatewayIntentBits.GuildVoiceStates,
   ],
 });
 
-attachSpeechEvent({
-  client: client,
+// Attaches custom event listeners to the client.
+// This should be done before the client is ready.
+DiscordSpeechRecognition.attachSpeechEvent({
+  client: discord_client as any, // eslint-disable-line @typescript-eslint/no-explicit-any
   shouldProcessUserId: (userId) => {
     // Assuming that the bot is currently in a voice channel with a user,
     // every time that a user in the voice channel starts speaking,
@@ -39,23 +40,34 @@ attachSpeechEvent({
 
     // return true to process the user's voice.
     // return false to not process the user's voice.
-  }
+
+    return true; // process all users
+  },
 });
 
 //------------------------------------------------------------//
 
-client.on('speechError', (speechError) => {
+client.on(DiscordSpeechRecognition.Events.Error, (speechError: DiscordSpeechRecognition.SpeechError) => {
   // It is highly recommended to filter out errors that you don't care about.
   // Use `speechError.code` and the enum `SpeechErrorCode` to filter.
 
   console.trace(speechError);
 });
 
-client.on('speech', (voiceMessage) => {
-  console.log(voiceMessage); // voiceMessage is an instance of a VoiceMessage
+client.on(DiscordSpeechRecognition.Events.VoiceMessage, (voiceMessage: DiscordSpeechRecognition.VoiceMessage) => {
+  // This event is fired every time a user finishes speaking.
+  // The `voiceMessage` parameter contains the user's voice data.
+
+  console.log(voiceMessage);
+});
+
+client.on(Discord.Events.ClientReady, () => {
+  // have the bot join a voice channel
 });
 
 //------------------------------------------------------------//
 
+// Pro-tip: you should store your bot's token in an .env file, or
+// through an environment variable, instead of hard-coding it here.
 client.login('YOUR_TOKEN_GOES_HERE');
 ```

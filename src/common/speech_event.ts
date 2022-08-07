@@ -14,10 +14,17 @@ import { SpeechErrorCode, SpeechError } from './speech_error';
 
 //------------------------------------------------------------//
 
+export enum Events {
+    Error = 'discordSpeechRecognition:error',
+    VoiceMessage = 'discordSpeechRecognition:voiceMessage',
+}
+
+//------------------------------------------------------------//
+
 export type AttachSpeechEventOptions = {
     client: Client<true>;
     shouldProcessUserId?: (userId: string) => Promise<boolean>;
-};
+}
 
 //------------------------------------------------------------//
 
@@ -42,12 +49,12 @@ export function attachSpeechEvent({
         /** @todo find a less hacky way to determine if the listener is active */
         const isGuildVoiceListenerActive = Boolean(
             connection.receiver.speaking.listeners('start').find(
-                (func) => func.name === 'onSpeakingStartSpeechRecognition'
+                (func) => func.name === 'onDiscordSpeechRecognitionReceiverStart'
             )
         );
         if (isGuildVoiceListenerActive) return;
 
-        connection.receiver.speaking.on('start', async function onSpeakingStartSpeechRecognition(userId) {
+        connection.receiver.speaking.on('start', async function onDiscordSpeechRecognitionReceiverStart(userId) {
             if (
                 typeof shouldProcessUserId === 'function' &&
                 !(await shouldProcessUserId(userId))
@@ -68,7 +75,7 @@ export function attachSpeechEvent({
             });
 
             opusStream.on('error', (error) => {
-                client.emit('speechError', SpeechError.from(SpeechErrorCode.Unknown, error, 'Opus Stream Error'));
+                client.emit(Events.Error, SpeechError.from(SpeechErrorCode.Unknown, error, 'Opus Stream Error'));
             });
 
             opusStream.on('end', async () => {
@@ -81,14 +88,14 @@ export function attachSpeechEvent({
                         userId: userId,
                     });
                 } catch (error) {
-                    client.emit('speechError', SpeechError.from(SpeechErrorCode.CreateVoiceMessage, error as Error | string, 'Failed to create VoiceMessage'));
+                    client.emit(Events.Error, SpeechError.from(SpeechErrorCode.CreateVoiceMessage, error as Error | string, 'Failed to create VoiceMessage'));
 
                     return;
                 }
                 if (!voiceMessage) return;
 
-                client.emit('speech', voiceMessage);
+                client.emit(Events.VoiceMessage, voiceMessage);
             });
         });
     });
-};
+}

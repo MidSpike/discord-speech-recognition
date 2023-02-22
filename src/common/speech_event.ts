@@ -39,9 +39,10 @@ export function attachSpeechEvent({
         if (!connection) return;
 
         try {
+            // wait for the connection to be ready
             await entersState(connection, VoiceConnectionStatus.Ready, 20e3);
         } catch (error) {
-            console.trace(error);
+            client.emit(Events.Error, SpeechError.from(SpeechErrorCode.VoiceConnectionStatusTimeout, error as Error | string, 'Timed out waiting for connection to enter ready state'));
 
             return;
         }

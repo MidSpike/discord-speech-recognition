@@ -64,7 +64,7 @@ export function attachSpeechEvent({
             const opusStream = connection.receiver.subscribe(userId, {
                 end: {
                     behavior: EndBehaviorType.AfterSilence,
-                    duration: 100, // unknown reason for this value, but it works for now
+                    duration: 100, // end stream after 100ms of silence
                 },
             });
 
